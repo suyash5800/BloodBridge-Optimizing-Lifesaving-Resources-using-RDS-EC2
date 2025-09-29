@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-white shadow-xl overflow-hidden sm:rounded-lg">
+        <!-- Header -->
+        <div class="px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-2xl leading-6 font-bold text-gray-900">{{ drive.title }}</h3>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-600">Organized by {{ organizer_name }}</p>
+                </div>
+                {% if status_text != 'UPCOMING' %}
+                <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full 
+                    {% if status_text == 'RUNNING' %}bg-yellow-100 text-yellow-800
+                    {% elif status_text == 'COMPLETED' %}bg-gray-200 text-gray-800
+                    {% elif status_text == 'CANCELLED' %}bg-red-100 text-red-800
+                    {% endif %}">
+                    {{ status_text }}
+                    {% if status_text == 'RUNNING' and days_remaining is not none %}{% if days_remaining > 0 %} ({{ days_remaining }} days left){% else %} (ends today){% endif %}{% endif %}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="px-4 py-5 sm:p-6">
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                <!-- Location -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-semibold text-gray-700">Location</dt>
+                    <dd class="mt-1 text-md text-gray-900">{{ drive.location }}</dd>
+                </div>
+                
+                <!-- Date and Time -->
+                <div class="sm:col-span-1">
+                    <dt class="text-sm font-semibold text-gray-700">Date and Time</dt>
+                    <dd class="mt-1 text-md text-gray-900">
+                        {{ drive.start_date.strftime('%B %d, %Y at %I:%M %p') }} to
+                        {{ drive.end_date.strftime('%B %d, %Y at %I:%M %p') }}
+                    </dd>
+                </div>
+                
+                <!-- Description -->
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-semibold text-gray-700">Description</dt>
+                    <dd class="mt-1 text-md text-gray-900">{{ drive.description }}</dd>
+                </div>
+                
+                {% if drive.blood_types_needed %}
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-semibold text-gray-700">Blood Types Needed</dt>
+                    <dd class="mt-1 text-md text-gray-900">
+                        {% for blood_type in drive.blood_types_needed.split(',') %}
+                        <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-red-100 text-red-800 mr-2">
+                            {{ blood_type.strip() }}
+                        </span>
+                        {% endfor %}
+                    </dd>
+                </div>
+                {% endif %}
+                
+                {% if drive.requirements %}
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-semibold text-gray-700">Requirements</dt>
+                    <dd class="mt-1 text-md text-gray-900">{{ drive.requirements }}</dd>
+                </div>
+                {% endif %}
+                
+                {% if drive.notes %}
+                <div class="sm:col-span-2">
+                    <dt class="text-sm font-semibold text-gray-700">Additional Notes</dt>
+                    <dd class="mt-1 text-md text-gray-900">{{ drive.notes }}</dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+        
+        <!-- Registration Section -->
+        {% if current_user.is_authenticated and current_user.user_type == 'donor' %}
+            {% set registration = drive.registrations|selectattr('donor_id', 'equalto', current_user.id)|first %}
+            {% if registration %}
+                {% if registration.status == 'registered' %}
+                <div class="px-4 py-5 sm:px-6 bg-green-50 border-t border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-green-700">You are registered for this blood drive.</p>
+                        <form action="{{ url_for('donor.cancel_registration', registration_id=registration.id) }}" method="POST" class="inline">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                                Cancel Registration
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% elif registration.status == 'cancelled' %}
+                <div class="px-4 py-5 sm:px-6 bg-red-50 border-t border-gray-200">
+                    <p class="text-sm text-red-700">You have cancelled your registration for this blood drive.</p>
+                </div>
+                {% endif %}
+            {% else %}
+                {% if drive.is_upcoming %}
+                <div class="px-4 py-5 sm:px-6 bg-gray-50 border-t border-gray-200">
+                    <form action="{{ url_for('donor.register_for_drive', drive_id=drive.id) }}" method="POST">
+                        <div class="mb-4">
+                            <label for="notes" class="block text-sm font-semibold text-gray-700 mb-1">Additional Notes (Optional)</label>
+                            <textarea name="notes" id="notes" rows="3" class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"></textarea>
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                            Register for this Drive
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <div class="px-4 py-5 sm:px-6 bg-gray-50 border-t border-gray-200">
+                    {% if status_text == 'RUNNING' %}
+                        <p class="text-sm text-gray-700">This blood drive is currently running. You can still register!</p>
+                    {% elif status_text == 'COMPLETED' %}
+                        <p class="text-sm text-gray-700">This blood drive has concluded.</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endif %}
+        {% elif not current_user.is_authenticated %}
+        <div class="px-4 py-5 sm:px-6 bg-gray-50 border-t border-gray-200">
+            <p class="text-md text-gray-700">
+                Please <a href="{{ url_for('auth.login') }}" class="font-medium text-red-600 hover:text-red-500">log in</a> or 
+                <a href="{{ url_for('auth.register', user_type='donor') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                    Register as Donor
+                </a> 
+                to participate in this blood drive.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

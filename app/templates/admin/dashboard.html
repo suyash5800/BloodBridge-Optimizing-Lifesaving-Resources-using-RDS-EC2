@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+
+    <!-- Notifications Section (now just a summary) -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bell"></i> Notifications
+                        {% if current_user.get_notification_count() > 0 %}
+                        <span class="badge bg-danger">{{ current_user.get_notification_count() }}</span>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">You have <strong>{{ pending_requests|length }}</strong> pending blood requests and <strong>{{ pending_donations|length }}</strong> pending donations awaiting approval.</p>
+                    {% if not pending_requests and not pending_donations %}
+                    <p class="mb-0 text-muted">No pending notifications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-users"></i> Total Registered Donors
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="text-3xl font-bold">{{ total_donors }}</h2>
+                    <p class="text-muted">Total users registered as donors.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6 flex justify-end">
+        <a href="{{ url_for('admin.schedule_drive') }}" class="bg-red-600 text-white px-6 py-3 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">
+            Schedule New Blood Drive
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Pending Blood Requests -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-red-600">Pending Blood Requests</h2>
+            {% if pending_requests %}
+            <ul class="space-y-4">
+                {% for request in pending_requests %}
+                <li class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                    <p class="font-medium text-lg">{{ request.hospital.hospital_name if request.hospital else request.requester.first_name + ' ' + request.requester.last_name }} needs {{ request.units_needed }} units of {{ request.blood_type }}</p>
+                    <p class="text-sm text-gray-600">Priority: {{ request.priority }} | Deadline: {{ request.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="text-sm text-gray-600">Patient Details: {{ request.patient_details }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Requested on: {{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <div class="mt-3">
+                        <form action="{{ url_for('admin.manage_blood_request', request_id=request.id, action='accept') }}" method="POST" class="inline-block mr-2">
+                            {{ form.csrf_token }}
+                            <label for="admin_notes_accept_req_{{ request.id }}" class="sr-only">Admin Notes for Accept</label>
+                            <textarea id="admin_notes_accept_req_{{ request.id }}" name="admin_notes" rows="2" class="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500" placeholder="Add notes (optional)"></textarea>
+                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 mt-2">Accept</button>
+                        </form>
+                        <form action="{{ url_for('admin.manage_blood_request', request_id=request.id, action='reject') }}" method="POST" class="inline-block">
+                            {{ form.csrf_token }}
+                            <label for="admin_notes_reject_req_{{ request.id }}" class="sr-only">Admin Notes for Reject</label>
+                            <textarea id="admin_notes_reject_req_{{ request.id }}" name="admin_notes" rows="2" class="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500" placeholder="Add notes (optional)"></textarea>
+                            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 mt-2">Reject</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No pending blood requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pending Donations -->
+        <div class="bg-white shadow-lg rounded-lg p-6">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-600">Pending Donations</h2>
+            {% if pending_donations %}
+            <ul class="space-y-4">
+                {% for donation in pending_donations %}
+                <li class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                    <p class="font-medium text-lg">{{ donation.donor.first_name }} {{ donation.donor.last_name }} wants to donate {{ donation.units }} unit(s) of {{ donation.blood_type }}</p>
+                    <p class="text-sm text-gray-600">Scheduled Date: {{ donation.donation_date.strftime('%Y-%m-%d') }}</p>
+                    <p class="text-sm text-gray-500 mt-1">Requested on: {{ donation.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <div class="mt-3">
+                        <form action="{{ url_for('admin.manage_donation', donation_id=donation.id, action='accept') }}" method="POST" class="inline-block mr-2">
+                            {{ form.csrf_token }}
+                            <label for="admin_notes_accept_don_{{ donation.id }}" class="sr-only">Admin Notes for Accept</label>
+                            <textarea id="admin_notes_accept_don_{{ donation.id }}" name="admin_notes" rows="2" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Add notes (optional)"></textarea>
+                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 mt-2">Accept</button>
+                        </form>
+                        <form action="{{ url_for('admin.manage_donation', donation_id=donation.id, action='reject') }}" method="POST" class="inline-block">
+                            {{ form.csrf_token }}
+                            <label for="admin_notes_reject_don_{{ donation.id }}" class="sr-only">Admin Notes for Reject</label>
+                            <textarea id="admin_notes_reject_don_{{ donation.id }}" name="admin_notes" rows="2" class="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500" placeholder="Add notes (optional)"></textarea>
+                            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 mt-2">Reject</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No pending donations.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Manage Blood Drives Section -->
+    <div class="bg-white shadow-lg rounded-lg p-6 mt-8">
+        <h2 class="text-2xl font-semibold mb-4 text-purple-600">Manage Blood Drives</h2>
+        {% if blood_drives %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% for drive in blood_drives %}
+            <div class="border border-gray-200 rounded-md p-4 bg-gray-50">
+                <h3 class="font-medium text-lg">{{ drive.title }}</h3>
+                <p class="text-sm text-gray-600">Location: {{ drive.location }}</p>
+                <p class="text-sm text-gray-600">Date: {{ drive.start_date.strftime('%Y-%m-%d %H:%M') }} - {{ drive.end_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p class="text-sm text-gray-500 mt-1">Status: {{ drive.status }}</p>
+                <div class="mt-3">
+                    <a href="{{ url_for('admin.edit_drive', drive_id=drive.id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mr-2">Edit</a>
+                    <form action="{{ url_for('admin.delete_drive', drive_id=drive.id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this blood drive?');">
+                        {{ form.csrf_token }}
+                        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-600">No blood drives scheduled yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

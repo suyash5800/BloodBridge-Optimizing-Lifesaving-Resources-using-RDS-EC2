@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Donor Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Donor Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Pending Donations -->
+        <div class="bg-yellow-100 shadow-lg rounded-lg p-6 border-l-4 border-yellow-500">
+            <h2 class="text-2xl font-semibold mb-4 text-yellow-800">Pending Donations</h2>
+            {% if pending_donations %}
+            <ul class="space-y-3">
+                {% for donation in pending_donations %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ donation.units }} unit(s) of {{ donation.blood_type }} on {{ donation.donation_date.strftime('%Y-%m-%d') }}</p>
+                    <p class="text-sm text-gray-600">Status: <span class="font-semibold text-yellow-700">{{ donation.status }}</span></p>
+                    {% if donation.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ donation.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No pending donations.</p>
+            {% endif %}
+        </div>
+
+        <!-- Accepted Donations -->
+        <div class="bg-green-100 shadow-lg rounded-lg p-6 border-l-4 border-green-500">
+            <h2 class="text-2xl font-semibold mb-4 text-green-800">Accepted Donations</h2>
+            {% if accepted_donations %}
+            <ul class="space-y-3">
+                {% for donation in accepted_donations %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ donation.units }} unit(s) of {{ donation.blood_type }} on {{ donation.donation_date.strftime('%Y-%m-%d') }}</p>
+                    <p class="text-sm text-gray-600">Status: <span class="font-semibold text-green-700">{{ donation.status }}</span></p>
+                    {% if donation.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ donation.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No accepted donations.</p>
+            {% endif %}
+        </div>
+
+        <!-- Rejected Donations -->
+        <div class="bg-red-100 shadow-lg rounded-lg p-6 border-l-4 border-red-500">
+            <h2 class="text-2xl font-semibold mb-4 text-red-800">Rejected Donations</h2>
+            {% if rejected_donations %}
+            <ul class="space-y-3">
+                {% for donation in rejected_donations %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ donation.units }} unit(s) of {{ donation.blood_type }} on {{ donation.donation_date.strftime('%Y-%m-%d') }}</p>
+                    <p class="text-sm text-gray-600">Status: <span class="font-semibold text-red-700">{{ donation.status }}</span></p>
+                    {% if donation.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ donation.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No rejected donations.</p>
+            {% endif %}
+        </div>
+
+        <!-- Recent Completed Donations -->
+        <div class="bg-blue-100 shadow-lg rounded-lg p-6 border-l-4 border-blue-500">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-800">Recent Completed Donations</h2>
+            {% if recent_completed_donations %}
+            <ul class="space-y-3">
+                {% for donation in recent_completed_donations %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ donation.units }} unit(s) of {{ donation.blood_type }} on {{ donation.donation_date.strftime('%Y-%m-%d') }}</p>
+                    <p class="text-sm text-gray-600">Status: <span class="font-semibold text-blue-700">{{ donation.status }}</span></p>
+                    {% if donation.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ donation.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No recent completed donations.</p>
+            {% endif %}
+        </div>
+
+        <!-- Registered Blood Drives -->
+        <div class="bg-purple-100 shadow-lg rounded-lg p-6 border-l-4 border-purple-500">
+            <h2 class="text-2xl font-semibold mb-4 text-purple-800">Registered Blood Drives</h2>
+            {% if registered_drives %}
+            <ul class="space-y-3">
+                {% for registration in registered_drives %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium"><a href="{{ url_for('main.blood_drive_detail', id=registration.drive.id) }}" class="text-purple-600 hover:underline">{{ registration.drive.title }}</a></p>
+                    <p class="text-sm text-gray-600">Location: {{ registration.drive.location }}</p>
+                    <p class="text-sm text-gray-600">Date: {{ registration.drive.start_date.strftime('%Y-%m-%d') }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No registered blood drives.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

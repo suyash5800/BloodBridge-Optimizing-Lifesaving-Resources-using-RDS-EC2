@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="relative bg-red-800">
+    <!-- <div class="absolute inset-0">
+        <img class="w-full h-full object-cover" src="{{ url_for('static', filename='images/hero-bg.jpg') }}" alt="Blood donation">
+        <div class="absolute inset-0 bg-red-800 mix-blend-multiply"></div>
+    </div> -->
+    <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">Save Lives Through Blood Donation</h1>
+        <p class="mt-6 text-xl text-red-100 max-w-3xl">Join our community of donors and help save lives. Your donation can make a difference in someone's life today.</p>
+        <div class="mt-10 flex flex-wrap gap-4">
+            <a href="{{ url_for('auth.register', user_type='donor') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-red-700 bg-white hover:bg-red-50">
+                Become a Donor
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('auth.logout') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-red-700 bg-white hover:bg-red-50">
+                Logout
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Urgent Blood Requests -->
+<div class="bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Urgent Blood Requests
+            </h2>
+            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+                Critical blood needs that require immediate attention
+            </p>
+        </div>
+        
+        <div class="mt-12 grid gap-5 mx-auto lg:grid-cols-3 lg:max-w-none">
+            {% for request in urgent_requests %}
+            <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
+                <div class="flex-1 bg-white p-6 flex flex-col justify-between">
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-red-600">
+                            {{ request.hospital.hospital_name if request.hospital else request.requester.first_name + ' ' + request.requester.last_name}}
+                        </p>
+                        <div class="block mt-2">
+                            <p class="text-xl font-semibold text-gray-900">
+                                {{ request.blood_type }} Blood Needed
+                            </p>
+                            <p class="mt-3 text-base text-gray-500">
+                                {{ request.units_needed }} units required
+                            </p>
+                            <p class="mt-1 text-sm text-gray-500">
+                                Priority: {{ request.priority }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <a href="{{ url_for('main.emergency_requests') }}" class="text-base font-medium text-red-600 hover:text-red-500">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-span-full text-center py-12">
+                <p class="text-gray-500">No urgent blood requests at the moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('main.emergency_requests') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                View All Emergency Requests
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Blood Drives -->
+<div class="bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Upcoming Blood Drives
+            </h2>
+            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+                Join us at these upcoming blood donation events
+            </p>
+        </div>
+        
+        <div class="mt-12 grid gap-5 mx-auto lg:grid-cols-3 lg:max-w-none">
+            {% for drive in upcoming_drives %}
+            <div class="flex flex-col rounded-lg shadow-lg overflow-hidden">
+                <div class="flex-1 bg-white p-6 flex flex-col justify-between">
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-red-600">
+                            {{ drive.organizer.bank_name }}
+                        </p>
+                        <div class="block mt-2">
+                            <p class="text-xl font-semibold text-gray-900">
+                                {{ drive.title }}
+                            </p>
+                            <p class="mt-3 text-base text-gray-500">
+                                {{ drive.location }}
+                            </p>
+                            <p class="mt-1 text-sm text-gray-500">
+                                {{ drive.start_date.strftime('%B %d, %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <a href="{{ url_for('main.blood_drive_detail', id=drive.id) }}" class="text-base font-medium text-red-600 hover:text-red-500">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-span-full text-center py-12">
+                <p class="text-gray-500">No upcoming blood drives scheduled.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('main.blood_drives') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                View All Blood Drives
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works -->
+<div class="bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                How It Works
+            </h2>
+            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+                The process of donating blood is simple and safe
+            </p>
+        </div>
+        
+        <div class="mt-12">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <!-- Step 1 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-red-500 rounded-md shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Register</h3>
+                            <p class="mt-5 text-base text-gray-500">
+                                Create an account and complete your donor profile with your blood type and medical history.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-red-500 rounded-md shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Schedule</h3>
+                            <p class="mt-5 text-base text-gray-500">
+                                Find a blood drive near you and schedule your donation appointment.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 3 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-red-500 rounded-md shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Donate</h3>
+                            <p class="mt-5 text-base text-gray-500">
+                                Visit the blood drive location, complete a quick health screening, and donate blood.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Step 4 -->
+                <div class="pt-6">
+                    <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
+                        <div class="-mt-6">
+                            <div>
+                                <span class="inline-flex items-center justify-center p-3 bg-red-500 rounded-md shadow-lg">
+                                    <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </span>
+                            </div>
+                            <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">Track</h3>
+                            <p class="mt-5 text-base text-gray-500">
+                                Monitor your donation history and impact through your donor dashboard.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="bg-red-700">
+    <div class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-extrabold text-white sm:text-4xl">
+            <span class="block">Ready to make a difference?</span>
+            <span class="block">Start donating blood today.</span>
+        </h2>
+        <p class="mt-4 text-lg leading-6 text-red-200">
+            Join our community of donors and help save lives. Your donation can make a difference in someone's life today.
+        </p>
+        <a href="{{ url_for('auth.register', user_type='donor') }}" class="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-red-700 bg-white hover:bg-red-50 sm:w-auto">
+            Sign up now
+        </a>
+    </div>
+</div>
+{% endblock %} 

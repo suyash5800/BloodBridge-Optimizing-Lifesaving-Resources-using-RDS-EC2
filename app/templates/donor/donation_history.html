@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Donation History</h1>
+
+    {% if donations.items %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Blood Type</th>
+                <th>Units</th>
+                <th>Status</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for donation in donations.items %}
+            <tr>
+                <td>{{ donation.donation_date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ donation.blood_type }}</td>
+                <td>{{ donation.units }}</td>
+                <td>{{ donation.status }}</td>
+                <td>{{ donation.notes if donation.notes else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if donations.has_prev %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('donor.donation_history', page=donations.prev_num) }}">Previous</a></li>
+            {% endif %}
+            {% for page in donations.iter_pages() %}
+            {% if page %}
+            {% if page == donations.page %}
+            <li class="page-item active"><a class="page-link" href="#">{{ page }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('donor.donation_history', page=page) }}">{{ page }}</a></li>
+            {% endif %}
+            {% else %}
+            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if donations.has_next %}
+            <li class="page-item"><a class="page-link" href="{{ url_for('donor.donation_history', page=donations.next_num) }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    {% else %}
+    <p>No donation history found.</p>
+    {% endif %}
+</div>
+{% endblock %} 

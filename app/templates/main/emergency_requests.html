@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Emergency Blood Request
+            </h2>
+            <p class="mt-3 max-w-2xl mx-auto text-xl text-gray-500 sm:mt-4">
+                Submit an emergency blood request to quickly find donors.
+            </p>
+        </div>
+
+        <div class="mt-12 max-w-lg mx-auto bg-white p-8 rounded-lg shadow-md">
+            <form action="{{ url_for('main.submit_emergency_request') }}" method="POST" class="space-y-6">
+                <div>
+                    <label for="blood_type" class="block text-sm font-semibold text-gray-800 mb-1">Blood Type</label>
+                    <select id="blood_type" name="blood_type" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                        <option value="">Select blood type</option>
+                        {% for blood_type in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] %}
+                        <option value="{{ blood_type }}">{{ blood_type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="units_needed" class="block text-sm font-semibold text-gray-800 mb-1">Units Needed</label>
+                    <input type="number" name="units_needed" id="units_needed" min="1" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                </div>
+
+                <div>
+                    <label for="priority" class="block text-sm font-semibold text-gray-800 mb-1">Priority</label>
+                    <select id="priority" name="priority" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                        <option value="">Select priority</option>
+                        <option value="CRITICAL">Critical</option>
+                        <option value="HIGH">High</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="LOW">Low</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="patient_details" class="block text-sm font-semibold text-gray-800 mb-1">Patient Details</label>
+                    <textarea id="patient_details" name="patient_details" rows="3" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label for="deadline" class="block text-sm font-semibold text-gray-800 mb-1">Deadline</label>
+                    <input type="datetime-local" name="deadline" id="deadline" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm">
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-lg font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

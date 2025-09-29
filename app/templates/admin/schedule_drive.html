@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+{% if drive %}Edit Blood Drive{% else %}Schedule New Blood Drive{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">
+        {% if drive %}Edit Blood Drive: {{ drive.title }}{% else %}Schedule New Blood Drive{% endif %}
+    </h1>
+
+    <div class="bg-white shadow-xl rounded-lg p-8 max-w-2xl mx-auto border border-gray-200">
+        <form method="POST" action="" class="space-y-6">
+            {{ form.csrf_token }}
+
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                {{ form.title(class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm", placeholder="e.g., Community Blood Drive") }}
+                {% if form.title.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.title.errors|join(', ') }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                {{ form.description(class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm", rows="4", placeholder="e.g., Join us for our monthly community blood drive...") }}
+                {% if form.description.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.description.errors|join(', ') }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                {{ form.location(class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm", placeholder="e.g., City Community Center") }}
+                {% if form.location.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.location.errors|join(', ') }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="start_date" class="block text-sm font-medium text-gray-700">Start Date & Time</label>
+                <div class="relative mt-1 rounded-md shadow-sm">
+                    {{ form.start_date(class="block w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm") }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                </div>
+                {% if form.start_date.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.start_date.errors|join(', ') }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="end_date" class="block text-sm font-medium text-gray-700">End Date & Time</label>
+                <div class="relative mt-1 rounded-md shadow-sm">
+                    {{ form.end_date(class="block w-full pl-4 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm") }}
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    </div>
+                </div>
+                {% if form.end_date.errors %}
+                    <p class="mt-2 text-sm text-red-600">{{ form.end_date.errors|join(', ') }}</p>
+                {% endif %}
+            </div>
+
+            <div class="flex justify-end pt-4">
+                {{ form.submit(class="inline-flex justify-center py-3 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 ease-in-out") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

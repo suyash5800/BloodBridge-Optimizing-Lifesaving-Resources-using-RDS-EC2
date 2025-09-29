@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Hospital Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Hospital Dashboard</h1>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Pending Blood Requests -->
+        <div class="bg-yellow-100 shadow-lg rounded-lg p-6 border-l-4 border-yellow-500">
+            <h2 class="text-2xl font-semibold mb-4 text-yellow-800">Pending Blood Requests</h2>
+            {% if pending_requests %}
+            <ul class="space-y-3">
+                {% for request in pending_requests %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ request.units_needed }} units of {{ request.blood_type }} (Priority: {{ request.priority }})</p>
+                    <p class="text-sm text-gray-600">Deadline: {{ request.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="text-sm text-gray-500">Status: <span class="font-semibold text-yellow-700">{{ request.status }}</span></p>
+                    {% if request.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ request.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No pending blood requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Accepted Blood Requests -->
+        <div class="bg-green-100 shadow-lg rounded-lg p-6 border-l-4 border-green-500">
+            <h2 class="text-2xl font-semibold mb-4 text-green-800">Accepted Blood Requests</h2>
+            {% if accepted_requests %}
+            <ul class="space-y-3">
+                {% for request in accepted_requests %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ request.units_needed }} units of {{ request.blood_type }} (Priority: {{ request.priority }})</p>
+                    <p class="text-sm text-gray-600">Deadline: {{ request.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="text-sm text-gray-500">Status: <span class="font-semibold text-green-700">{{ request.status }}</span></p>
+                    {% if request.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ request.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No accepted blood requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Rejected Blood Requests -->
+        <div class="bg-red-100 shadow-lg rounded-lg p-6 border-l-4 border-red-500">
+            <h2 class="text-2xl font-semibold mb-4 text-red-800">Rejected Blood Requests</h2>
+            {% if rejected_requests %}
+            <ul class="space-y-3">
+                {% for request in rejected_requests %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ request.units_needed }} units of {{ request.blood_type }} (Priority: {{ request.priority }})</p>
+                    <p class="text-sm text-gray-600">Deadline: {{ request.deadline.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="text-sm text-gray-500">Status: <span class="font-semibold text-red-700">{{ request.status }}</span></p>
+                    {% if request.admin_notes %}
+                    <p class="text-sm text-gray-500">Admin Notes: {{ request.admin_notes }}</p>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No rejected blood requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Recently Fulfilled Requests -->
+        <div class="bg-blue-100 shadow-lg rounded-lg p-6 border-l-4 border-blue-500">
+            <h2 class="text-2xl font-semibold mb-4 text-blue-800">Recently Fulfilled Requests</h2>
+            {% if fulfilled_requests %}
+            <ul class="space-y-3">
+                {% for request in fulfilled_requests %}
+                <li class="bg-white p-3 rounded-md shadow-sm">
+                    <p class="font-medium">{{ request.units_needed }} units of {{ request.blood_type }} (Priority: {{ request.priority }})</p>
+                    <p class="text-sm text-gray-600">Fulfilled on: {{ request.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    <p class="text-sm text-gray-500">Status: <span class="font-semibold text-blue-700">{{ request.status }}</span></p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-gray-600">No recently fulfilled requests.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
